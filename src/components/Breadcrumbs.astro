@@ -1,0 +1,60 @@
+---
+import title from 'title';
+const paths = Astro.request.url.pathname.split('/').filter(x => x);
+
+let parts = [
+  {
+    text: 'Home',
+    href: '/',
+    'aria-current': Astro.request.url.pathname === '/' ? 'page' : undefined
+  }
+];
+
+paths.forEach((text, i) => {
+  const href = `/${paths.slice(0, i + 1).join('/')}`;
+  parts.push({ text: title(text.replace(/[-_]/g, ' ')), href, 'aria-current': Astro.request.url.pathname === href ? 'page' : undefined })
+})
+---
+
+<nav aria-label="Breadcrumb" class="breadcrumb">
+  <ol class="breadcrumbs" role="list">
+    {parts.map(({ text, ...attrs }) => <li class="breadcrumb" role="listitem"><a {...attrs}>{text}</a></li>)}
+  </ol>
+</nav>
+
+<style>
+nav.breadcrumb {
+  padding: 0.8em 1em;
+  border: 1px solid hsl(0, 0%, 90%);
+  border-radius: 4px;
+  background: hsl(300, 14%, 97%);
+}
+
+nav.breadcrumb ol {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+nav.breadcrumb li {
+  display: inline;
+}
+
+nav.breadcrumb li + li::before {
+  --size: 0.33em;
+  width: 0;
+  height: 0;
+  border-top: var(--size) solid transparent;
+  border-bottom: var(--size) solid transparent;
+  border-left: var(--size) solid hsl(0, 0%, 60%);
+  display: inline-block;
+  margin: 0 0.5em;
+  content: "";
+}
+
+nav.breadcrumb [aria-current="page"] {
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
+}
+</style>
